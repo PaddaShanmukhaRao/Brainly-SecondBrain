@@ -2,16 +2,21 @@ import express, { json } from 'express';
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import {userModel} from './db.js';
+import 'dotenv/config';
 
 const app = express();
 app.use(json())
+await mongoose.connect(process.env.MONGO_URI as string);
 app.post('/api/v1/signup',async(req,res)=>{
+    //zod validation and hash the password using bycrypt
     const {username,password} = req.body
-    const user = new userModel({
+    await userModel.create({
         username,
         password
     })
-    await user.save();
+    res.json({
+        "message":"User created"
+    })
     
 })
 app.post('/api/v1/signin',(req,res)=>{
