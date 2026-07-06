@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import jwt, {} from "jsonwebtoken";
 import { userModel, contentModel } from "./db.js";
 import "dotenv/config";
+import { userMiddlewear } from "./middlewear.js";
 const app = express();
 app.use(json());
 await mongoose.connect(process.env.MONGO_URI);
@@ -45,24 +46,18 @@ app.post("/api/v1/signin", async (req, res) => {
         });
     }
 });
-app.post("/api/v1/content", async (req, res) => {
+app.post("/api/v1/content", userMiddlewear, async (req, res) => {
     const title = req.body.title;
-    const link = req.body?.link;
-    const tags = req.body?.tags;
-    const authToken = req.headers.authorization;
-    const userid = jwt.decode(authToken);
-    console.log(userid);
-    console.log(userid.id);
-    const response = await userModel.findOne({
-        _id: userid.id,
-    });
-    console.log(response);
+    const link = req.body.link;
+    const tags = req.body.tags;
     try {
         await contentModel.create({
             title,
             link,
             tags,
-            userid: userid.id,
+            //@ts-ignore
+            //How to override types something concept
+            userid: req.userid,
         });
         res.send({
             message: "Added the content",
@@ -74,16 +69,13 @@ app.post("/api/v1/content", async (req, res) => {
         });
     }
 });
-app.get("/api/v1/content", async (req, res) => {
-    const authToken = req.headers.authorization;
-    const userid = jwt.decode(authToken);
-    console.log(userid);
+app.get("/api/v1/content", userMiddlewear, async (req, res) => {
     const response = await contentModel.find({
-        userid: userid.id,
+        //@ts-ignore
+        userid: req.userid,
     });
-    console.log(response);
     res.send({
-        "Message": response
+        response
     });
 });
 app.delete("api/v1/content", (req, res) => { });

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { userModel, contentModel } from "./db.js";
 import "dotenv/config";
+import { userMiddlewear } from "./middlewear.js";
 
 const app = express();
 app.use(json());
@@ -47,26 +48,19 @@ app.post("/api/v1/signin", async (req, res) => {
     });
   }
 });
-app.post("/api/v1/content", async (req, res) => {
+app.post("/api/v1/content", userMiddlewear, async (req, res) => {
   const title = req.body.title;
-  const link = req.body?.link;
-  const tags = req.body?.tags;
-  const authToken = req.headers.authorization;
-
-  const userid = jwt.decode(authToken as string) as JwtPayload;
-  console.log(userid);
-  console.log(userid.id as mongoose.Types.ObjectId);
-  const response = await userModel.findOne({
-    _id: userid.id as mongoose.Types.ObjectId,
-  });
-  console.log(response);
+  const link = req.body.link;
+  const tags = req.body.tags;
 
   try {
     await contentModel.create({
       title,
       link,
       tags,
-      userid: userid.id as mongoose.Types.ObjectId,
+      //@ts-ignore
+      //How to override types something concept
+      userid: req.userid as mongoose.Types.ObjectId,
     });
     res.send({
       message: "Added the content",
@@ -77,22 +71,25 @@ app.post("/api/v1/content", async (req, res) => {
     });
   }
 });
-app.get("/api/v1/content", async (req, res) => {
-  const authToken = req.headers.authorization;
-
-  const userid = jwt.decode(authToken as string) as JwtPayload;
-  console.log(userid);
-
-  const response = await contentModel.find({
-    userid: userid.id as mongoose.Types.ObjectId,
-  });
-  console.log(response);
-  res.send({
-    "Message":response
-  })
+app.get("/api/v1/content", userMiddlewear, async (req, res) => {
+    const response = await contentModel.find({
+        //@ts-ignore
+        userid:req.userid,
+    })
+    res.send({
+        response
+    })
 });
-app.delete("api/v1/content", (req, res) => {
-    
+app.delete("api/v1/content",userMiddlewear, async(req, res) => {
+    const contentId = req.body.contentId;
+    await contentModel.deleteOne({
+        contentId,
+        //@ts-ignore
+        userid:req.userid
+    })
+    res.send({
+        "message":"Deleted successfully"
+    })
 });
 app.post("api/v1/brain/share", (req, res) => {});
 app.get("api/v1/brain:sharelink", (req, res) => {});
