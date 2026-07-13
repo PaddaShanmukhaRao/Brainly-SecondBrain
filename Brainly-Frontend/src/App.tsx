@@ -7,6 +7,7 @@ export default function App() {
       <h1 className="text-3xl font-bold text-blue-600 underline">
         <Button onClick={()=>{}} variant="primary" size="sm" startIcon=""  endIcon="" text="Add Content" ></Button>
       </h1> 
+      
     </div>
   )
 }
