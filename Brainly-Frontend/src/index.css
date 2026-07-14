@@ -1,1 +1,9 @@
+/* src/index.css */
 @import "tailwindcss";
+
+@theme {
+  /* You can name "primary" whatever you want, like "brand" or "accent" */
+  --color-primary-100: #e0e7ff; /* The light blue/indigo */
+  --color-primary-500: #5046e4; /* The main vibrant color */
+  --color-primary-700: #4f48b6; /* The darker, muted version */
+}

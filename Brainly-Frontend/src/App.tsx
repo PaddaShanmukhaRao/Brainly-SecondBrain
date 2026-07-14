@@ -1,12 +1,45 @@
 import { Button } from "./components/ui/button";
 
-// src/App.tsx
+
+// A simple SVG Plus icon for the primary button
+const PlusIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+  </svg>
+);
+
+// A simple SVG Share icon for the secondary button
+const ShareIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+  </svg>
+);
+
 export default function App() {
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold text-blue-600 underline">
-        <Button onClick={()=>{}} variant="primary" size="sm" startIcon=""  endIcon="" text="Add Content" ></Button>
-      </h1> 
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      
+      {/* Recreating the layout from your image */}
+      <div className="flex gap-4">
+        
+        <Button 
+          variant="secondary" 
+          size="md" 
+          text="Share Brain" 
+          startIcon={ShareIcon} 
+          onClick={() => console.log("Share clicked")} 
+        />
+        
+        <Button 
+          variant="primary" 
+          size="md" 
+          text="Add Content" 
+          startIcon={PlusIcon} 
+          onClick={() => console.log("Add clicked")} 
+        />
+        
+      </div>
+      
     </div>
-  )
+  );
 }
