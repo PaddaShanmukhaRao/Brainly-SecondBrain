@@ -1,9 +1,10 @@
 import express, { json } from "express";
 import mongoose from "mongoose";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import { userModel, contentModel } from "./db.js";
+import { userModel, contentModel, linkModel } from "./db.js";
 import "dotenv/config";
 import { userMiddlewear } from "./middlewear.js";
+import { random } from "./utils.js";
 
 const app = express();
 app.use(json());
@@ -72,25 +73,56 @@ app.post("/api/v1/content", userMiddlewear, async (req, res) => {
   }
 });
 app.get("/api/v1/content", userMiddlewear, async (req, res) => {
-    const response = await contentModel.find({
-        //@ts-ignore
-        userid:req.userid,
-    })
-    res.send({
-        response
-    })
+  const response = await contentModel.find({
+    //@ts-ignore
+    userid: req.userid as mongoose.Types.ObjectId,
+  });
+  res.send({
+    response,
+  });
 });
-app.delete("api/v1/content",userMiddlewear, async(req, res) => {
-    const contentId = req.body.contentId;
-    await contentModel.deleteOne({
-        contentId,
-        //@ts-ignore
-        userid:req.userid
-    })
-    res.send({
-        "message":"Deleted successfully"
-    })
+app.delete("/api/v1/content", userMiddlewear, async (req, res) => {
+  const contentId = req.body.contentId;
+  await contentModel.deleteOne({
+    contentId,
+    //@ts-ignore
+    userid: req.userid,
+  });
+  res.send({
+    message: "Deleted successfully",
+  });
+ });
+
+
+app.post("/api/v1/brain/share", userMiddlewear, async (req, res) => {
+  const share = req.body.share;
+  if (share) {
+    await linkModel.create({
+      //@ts-ignore
+      userid: req.userid,
+      hash: random(10),
+    });
+  } else {
+    await linkModel.deleteOne({
+      //@ts-ignore
+      userid: req.userid,
+    });
+  }
+  res.json({
+    message: "Updated sharable link",
+  });
 });
-app.post("api/v1/brain/share", (req, res) => {});
-app.get("api/v1/brain:sharelink", (req, res) => {});
+app.get("/api/v1/brain/:sharelink", async(req, res) => {
+  const hash = req.params.sharelink;
+  const link = await linkModel.findOne({
+    hash
+  })
+  //@ts-ignore
+  const content = await contentModel.find({
+    userid:link?.userid
+  })
+  res.json({
+    content
+  })
+});
 app.listen(3000);
