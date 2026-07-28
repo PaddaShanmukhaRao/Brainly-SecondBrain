@@ -91,38 +91,68 @@ app.delete("/api/v1/content", userMiddlewear, async (req, res) => {
   res.send({
     message: "Deleted successfully",
   });
- });
-
+});
 
 app.post("/api/v1/brain/share", userMiddlewear, async (req, res) => {
   const share = req.body.share;
+  const hash = random(10);
   if (share) {
-    await linkModel.create({
-      //@ts-ignore
-      userid: req.userid,
-      hash: random(10),
-    });
+    try {
+      await linkModel.create({
+        //@ts-ignore
+        userid: req.userid,
+        hash: hash,
+      });
+    } catch (e) {
+      const linkhash = await linkModel.findOne({
+        //@ts-ignore
+        userid: req.userid,
+      });
+      res.json({
+        message: "Link",
+        link: `/share/${linkhash?.hash}`,
+      });
+    }
   } else {
     await linkModel.deleteOne({
       //@ts-ignore
       userid: req.userid,
     });
+    res.json({
+      message: "Link deleted",
+    });
   }
   res.json({
     message: "Updated sharable link",
+    link: "/share/" + hash,
   });
 });
-app.get("/api/v1/brain/:sharelink", async(req, res) => {
+app.get("/api/v1/brain/:sharelink", async (req, res) => {
   const hash = req.params.sharelink;
   const link = await linkModel.findOne({
-    hash
-  })
-  //@ts-ignore
+    hash,
+  });
+
+  if (!link) {
+    res.json({
+      message: "Invalid link",
+    });
+    return;
+  }
+
+  if (!link.userid) {
+    res.status(411).json({
+      message: "Invalid link",
+    });
+    return;
+  }
+
   const content = await contentModel.find({
-    userid:link?.userid
-  })
+    userid: link.userid,
+  });
+
   res.json({
-    content
-  })
+    content,
+  });
 });
 app.listen(3000);
