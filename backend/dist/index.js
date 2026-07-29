@@ -95,21 +95,28 @@ app.post("/api/v1/brain/share", userMiddlewear, async (req, res) => {
     const hash = random(10);
     if (share) {
         try {
+            const existingLink = await linkModel.findOne({
+                //@ts-ignore
+                userid: req.userid
+            });
+            if (existingLink) {
+                res.json({
+                    "link": `/share/${existingLink.hash}`
+                });
+                return;
+            }
+        }
+        catch (e) {
             await linkModel.create({
                 //@ts-ignore
                 userid: req.userid,
                 hash: hash,
             });
-        }
-        catch (e) {
-            const linkhash = await linkModel.findOne({
-                //@ts-ignore
-                userid: req.userid,
-            });
             res.json({
                 message: "Link",
-                link: `/share/${linkhash?.hash}`,
+                link: `/share/${hash}`,
             });
+            return;
         }
     }
     else {
@@ -120,11 +127,8 @@ app.post("/api/v1/brain/share", userMiddlewear, async (req, res) => {
         res.json({
             message: "Link deleted",
         });
+        return;
     }
-    res.json({
-        message: "Updated sharable link",
-        link: "/share" + hash,
-    });
 });
 app.get("/api/v1/brain/:sharelink", async (req, res) => {
     const hash = req.params.sharelink;
