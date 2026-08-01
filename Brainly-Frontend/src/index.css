@@ -3,9 +3,9 @@
 
 @theme {
   /* You can name "primary" whatever you want, like "brand" or "accent" */
-  --color-purple-100: #e0e7ff; /* The light blue/indigo */
-  --color-purple-500: #5046e4; /* The main vibrant color */
-  --color-purple-700: #4f48b6; /* The darker, muted version */
+  --color-purple-200: #e0e7ff; 
+  --color-purple-400: #5046e4; 
+  --color-purple-600: #4f48b6;
   --color-gray-100: #eeeeef;
   --color-gray-200: #e6e9ed;
   --color-gray-600: #95989c;
