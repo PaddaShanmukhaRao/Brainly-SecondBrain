@@ -5,9 +5,11 @@ import { userModel, contentModel, linkModel } from "./db.js";
 import "dotenv/config";
 import { userMiddlewear } from "./middlewear.js";
 import { random } from "./utils.js";
+import cors from 'cors';
 
 const app = express();
 app.use(json());
+app.use(cors());
 await mongoose.connect(process.env.MONGO_URI as string);
 app.post("/api/v1/signup", async (req, res) => {
   //zod validation and hash the password using bycrypt
