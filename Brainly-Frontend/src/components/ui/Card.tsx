@@ -7,7 +7,7 @@ interface CardProps {
 export function Card({ title, link, type }: CardProps) {
   return (
     <div>
-      <div className=" p-4 bg-white rounded-md border max-w-72 border-gray-200">
+      <div className=" p-4 bg-white rounded-md border max-w-72 border-gray-200 min-h-48 min-w-72">
         <div className="flex items-center justify-between">
           <div className="flex items-center font text-sm">
             <div className="pr-2 text-gray-400 ">{<ShareIcon />}</div>
