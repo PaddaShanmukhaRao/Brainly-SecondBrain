@@ -1,12 +1,35 @@
+import { useRef } from "react";
 import { CrossIcon } from "../../icons/CrossIcon";
 import Button from "./button";
 import { Input } from "./Input";
+import axios from "axios";
+import { BACKEND_URL } from "../../config";
 //controlled component\
-interface CreateContentModalProps{
-    open:boolean;
-    onClose:()=>void
+interface CreateContentModalProps {
+  open: boolean;
+  onClose: () => void;
 }
-export function CreateContentModal({ open, onClose }:CreateContentModalProps) {
+export function CreateContentModal({ open, onClose }: CreateContentModalProps) {
+  const titleRef = useRef<HTMLInputElement>(null);
+  const linkRef = useRef<HTMLInputElement>(null);
+  async function addContent() {
+    const title = titleRef.current?.value;
+    const link = linkRef.current?.value;
+    const response = await axios.post(
+      `${BACKEND_URL}/api/vi/content`,
+      {
+        title,
+        link,
+      },
+      {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    console.log(response)
+  }
   return (
     <>
       {open && (
@@ -19,13 +42,13 @@ export function CreateContentModal({ open, onClose }:CreateContentModalProps) {
                 </div>
               </div>
               <div>
-                <Input placeholder="Title" />
+                <Input ref={titleRef} placeholder="Title" />
               </div>
               <div>
-                <Input placeholder="Link" />
+                <Input ref={linkRef} placeholder="Link" />
               </div>
               <div className="flex justify-center">
-                <Button variant="primary" text="Submit" />
+                <Button variant="primary" text="Submit" onClick={addContent} />
               </div>
             </span>
           </div>
@@ -34,4 +57,3 @@ export function CreateContentModal({ open, onClose }:CreateContentModalProps) {
     </>
   );
 }
-
